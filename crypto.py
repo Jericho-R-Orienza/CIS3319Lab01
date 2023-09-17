@@ -24,18 +24,23 @@ class KeyManager:
         return: random bytes of length (key_len // 8)
         """
         # TODO: your code here
-        rand_bytes = bytes() # just a placeholder
-
+        #rand_bytes_key = bytes(random.randint(0, 255) for _ in range(num_bytes)) -- this line gets the job done but it is not secure
+        #https://stackoverflow.com/questions/47514695/whats-the-difference-between-os-urandom-and-random
+        num_bytes = key_len // 8
+        rand_bytes = os.urandom(num_bytes) #note: we are outputting binary bytes
         return rand_bytes
 
-
-def bitize(byts: bytes) -> 'list[int]':
+#use map() function https://www.geeksforgeeks.org/python-map-function/
+def bitize(byts: bytes) -> 'list[int]': #note: parameter: byte type called byts; return type: a list of integers
     """
     bitize bytes
     """
     bits = []
     # TODO: your code here
-
+    for byte in byts:
+        #use bin() to convert to binary, and then we use [2:] to skip the "0b" prefix found in all binary -- finally, zfill(8) is our padding to ensure that all binary bytes are converted into 8 bits and nothing less
+        binary_string = bin(byte)[2:].zfill(8)
+        bits.extend(map(int, binary_string)) #.extend() is used to add elements from an iterable -- which is map(int, binary-string) converting the binary string into a list of ints
     return bits
 
 def debitize(bits: Iterable[int]) -> bytes:
@@ -48,6 +53,12 @@ def debitize(bits: Iterable[int]) -> bytes:
     byts = []
 
     # TODO: your code here
+
+    for i in range(0, len(bits), 8): #loops over each 8-bit 
+        byte_8bits = bits[i:i+8] #create a list starting at i and ending after we reached 8th bit // we divide out bits into 8s because each byte is 8 bits
+        debit_byte = int(''.join(map(str, byte_8bits)), 2) #we use str() to convert debit_byte to a string so we can use .join with '' and then after that we use int([], 2) to convert back to int in base 2/binary
+        byts.append(debit_byte)
+
     return byts
 
 def bit2hex(bits: Iterable[int]) -> str:
