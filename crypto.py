@@ -349,13 +349,29 @@ class DES:
         """
         # TODO: your code here
 
+        #initial permutation using provided DES.IP
+        block = permute(block, DES.IP)
+
+        #split the block so we can perform mixer which includes feistel(f) function
+        L = block[:32]
+        R = block[32:]
+
+        #perform the 16 rounds with round keys generated
+        for round_key in self.keys:
+            #perform mixer()
+            L, R = DES.mixer(L, R, round_key)
+
+            #perform swapper()
+            L, R = DES.swapper(L, R)
         
+        #note: after 16 rounds from the for loop -- we should end with R, L order where the right block is now the left, and the left block is now the right
+        #so, we reverse the order once more so we have the right and left block in their orignal spaces after performing 16 rounds of mixing/swapping
+        block = R + L
 
+        #final permutation using provided DES.FP
+        block = permute(block, DES.FP)
 
-
-
-
-        return [] # just a placeholder
+        return block # just a placeholder
 
     def dec_block(self, block: 'list[int]') -> 'list[int]':
         """
@@ -364,7 +380,24 @@ class DES:
         return: 64 bits
         """
         # TODO: your code here
-        return [] # just a placeholder
+
+        #note: for decryption, we are doing the same thing but instead we reverse the process done in the 16 round for loop
+        block = permute(block, DES.IP)
+
+        L = block[:32]
+        R = block[32:]
+        
+        for round_key in self.reverse_keys:
+
+            L, R = DES.swapper(L, R)
+
+            L, R = DES.mixer(L, R, round_key)
+
+        block = R + L
+
+        block = permute(block, DES.FP)
+
+        return block 
 
     def encrypt(self, msg_str: str) -> bytes:
         """
