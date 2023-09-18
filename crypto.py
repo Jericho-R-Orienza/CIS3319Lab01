@@ -315,8 +315,16 @@ class DES:
         """
         # TODO: your code here
         # tips: finish f and xor first, then use them here
+        #first step: expand right half using D_EXPANSION
+        R_expanded = permutee(R, DES.D_EXPANSION)
+        #second step: xor r_expanded with subkey
+        xor_result = xor(R_expanded, sub_key)
+        #third step: apply funciton f / S-box substitution
+        sbox_sub = DES.f(xor_result, sub_key)
+        #fourth step: xir left half and the output of sbox sub
+        new_R = xor(L, sbox_sub)
 
-        return (L, R) # just a placeholder
+        return (R, new_R) #return the right half and the new right half as tuples 
     
     @staticmethod
     def swapper(L: 'list[int]', R: 'list[int]') -> 'tuple[list[int]]':
@@ -340,6 +348,13 @@ class DES:
         return: 64 bits.
         """
         # TODO: your code here
+
+        
+
+
+
+
+
         return [] # just a placeholder
 
     def dec_block(self, block: 'list[int]') -> 'list[int]':
