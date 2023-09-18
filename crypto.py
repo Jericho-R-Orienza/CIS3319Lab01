@@ -279,7 +279,32 @@ class DES:
         """
         # TODO: your code here
 
-        return [] # just a placeholder
+        #use provided D_EXPANSION for the permutation 
+        R_expanded = permute(R, DES.D_EXPANSION)
+        #xor expanded with given round key
+        xor_R = xor(R_expanded, key)
+
+        sbox_output = []
+
+        for i in range(8): #loop to do the mixing with 8 provided S-boxes
+
+            six_bits = xor_R[i*6 : (i+1)*6] #operation that gets 6-bits -- we split the 48-bits into 8 6-bits
+
+            #note: the first and last bit determine the row, and the middle four bits determine the column in the S-box
+            #take the bits accordingly and combine them to create a binary string that will convert to a corresponding row/col number
+            sbox_row = int(f"{six_bits[0]}{siz_bits[5]}", 2)
+            sbox_col = int(f"{six_bits[1]}{six_bits[2]}{six_bits[3]}{six_bits[4]}, 2")
+
+            #use DES.S to access the 8 different S-boxs accordinly to i -- implement row and col to get the value
+            sbox_value = DES.S[i][row][col]
+
+            #.extend() to add elements onto an iterable while we use map() -- use bin() to convert into binary string -- [2:] takes the 3rd to the last bit -- zfill(4) is padding to ensure we leave with a 4-bit
+            sbox_output.extend(map(int, bin(sbox_value[2:].zfill(4))))
+
+        #permute our output after 8 rounds of S-box with the provided D_STRAIGHT -- this is the final step for the function
+        output_permute = permute(sbox_output, DES.D_STRAIGHT)
+
+        return output_permute 
 
     @staticmethod  
     def mixer(L: 'list[int]', R: 'list[int]', sub_key: 'list[int]') -> 'tuple[list[int]]':
