@@ -73,19 +73,38 @@ def hex2bit(hex_str: str) -> list:
     """
     return bitize(bytes.fromhex(hex_str))
 
-def permute(raw_seq: Iterable, table: Iterable[int]) -> list:
+#note: a permutation table is a list of random indexes used to shuffle
+def permute(raw_seq: Iterable, table: Iterable[int]) -> list: #out raw sequence is out input and our table is our permutation table
     """
     permute bits with a table
     """
     # TODO: your code here
-    return [] # just a placeholder
+    permute_seq = []
+
+    #check if lists are the same length
+    if(len(raw_seq) != len(tabel)):
+        raise ValueError("Invalid Index! Ensure both inputs have the same length.")
+
+    for index in table:
+        permute_seq.append(raw_seq[index])
+        
+    return permute_seq 
 
 def xor(bits1: Iterable[int], bits2: Iterable[int]) -> 'list[int]':
     """
     xor two bits
     """
     # TODO: your code here
-    return [] # just a placeholder
+    xor_result = []
+
+    #check if lists are the same length
+    if len(bits1) != len(bits2):
+        raise ValueError("Input lists are not the same length.")
+    
+    for bits1, bits2 in zip(bits1, bits2): #zip() to combines iterables -- for each element from bits1 and bits2 iteration
+        xor_result.append(bits1 ^ bits2)  #use ^ as bitwise XOR and append the result between bits1 and bits2
+
+    return xor_result 
 
 class DES:
 
