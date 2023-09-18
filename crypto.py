@@ -246,6 +246,26 @@ class DES:
 
         keys: 'list[list[int]]' = []
         # TODO: your code here
+        #use KEY_DROP tp change key from 64-bits into 58-bits
+        new_key = permute(key, DES.KEY_DROP)
+
+        #split 56-bit key into 2 28-bits left and right
+        left_key = key[:28]
+        right_key = key[28:]
+
+        for round in range(16): #16 rounds of shifting
+
+            shift_round = DES.BIT_SHIFT[round] #the round we are on - rounds 1, 2, 9, and 16 shift one bit, the rest 2 bits
+
+            #shift left -- [round:] takes all elements to the right of round; [:round] takes the round and all elements to its left
+            left_key = left_key[round:] + left_key[:round] 
+            right_key = right_key[round:] + right_key[:round]
+
+            #we combine them to effectivley make the "shift" happen
+            combined_key = left_key + right_key
+            #permute with KEY_COMPRESSION to change from 58-bit to 48-bit
+            subkey = permute(combined_key, DES.KEY_COMPRESSION)
+            keys.append(subkey)
 
         return keys
 
